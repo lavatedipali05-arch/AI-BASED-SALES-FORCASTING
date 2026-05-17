@@ -1,35 +1,33 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+import plotly.express as px
+import time
 
-# ==========================================
-# PAGE CONFIG
-# ==========================================
+# ---------------- PAGE CONFIG ---------------- #
 st.set_page_config(
     page_title="AI Sales Forecasting",
     page_icon="📈",
     layout="wide"
 )
 
-# ==========================================
-# CUSTOM CSS
-# ==========================================
+# ---------------- CUSTOM CSS ---------------- #
 st.markdown("""
 <style>
 
 html, body, [class*="css"] {
     font-family: 'Segoe UI';
-}
-
-.stApp {
-    background: linear-gradient(to right, #0f172a, #111827);
+    background-color: #0f172a;
     color: white;
 }
 
-/* Main Title */
+/* Main Background */
+.stApp {
+    background: linear-gradient(to right, #0f172a, #111827);
+}
+
+/* Title */
 .main-title {
     font-size: 55px;
     font-weight: 700;
@@ -40,7 +38,7 @@ html, body, [class*="css"] {
 /* Subtitle */
 .subtitle {
     font-size: 20px;
-    color: #9CA3AF;
+    color: #94A3B8;
     margin-bottom: 30px;
 }
 
@@ -64,26 +62,40 @@ html, body, [class*="css"] {
 }
 
 .result-text {
-    font-size: 22px;
+    font-size: 24px;
     color: white;
 }
 
 .result-value {
-    font-size: 45px;
+    font-size: 50px;
     font-weight: bold;
     color: white;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: #111827;
+}
+
+/* Metrics */
+.metric-box {
+    background: #1E293B;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 15px;
 }
 
 /* Button */
 .stButton > button {
     width: 100%;
     height: 55px;
-    border: none;
     border-radius: 15px;
-    background: linear-gradient(to right, #2563EB, #1D4ED8);
-    color: white;
+    border: none;
     font-size: 20px;
     font-weight: bold;
+    background: linear-gradient(to right, #2563EB, #1D4ED8);
+    color: white;
     transition: 0.3s;
 }
 
@@ -92,27 +104,12 @@ html, body, [class*="css"] {
     background: linear-gradient(to right, #1D4ED8, #2563EB);
 }
 
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background: #0F172A;
-}
-
-/* Metrics */
-.metric-box {
-    background: #111827;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
 /* Animation */
 @keyframes fadeIn {
     from {
         opacity: 0;
         transform: translateY(20px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0px);
@@ -122,36 +119,48 @@ section[data-testid="stSidebar"] {
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# SIDEBAR
-# ==========================================
+# ---------------- SIDEBAR ---------------- #
 st.sidebar.title("📊 Dashboard")
-
 st.sidebar.markdown("---")
 
 st.sidebar.info("""
 ### AI Sales Forecasting System
 
-Predict future sales revenue using
-Machine Learning Algorithms.
+Predict future revenue using Machine Learning.
 
 ### Features
-✔ Real-time Prediction
-✔ Modern Dark UI
-✔ AI Forecasting
-✔ Revenue Analytics
-✔ Fast Processing
+✅ Revenue Prediction  
+✅ Analytics Dashboard  
+✅ Interactive Charts  
+✅ Modern UI  
 """)
 
-st.sidebar.markdown("---")
+# ---------------- DUMMY DATA ---------------- #
+np.random.seed(42)
 
-st.sidebar.success("System Active ✅")
+data = pd.DataFrame({
+    "Year": np.random.randint(2020, 2026, 500),
+    "Month": np.random.randint(1, 13, 500),
+    "Day": np.random.randint(1, 31, 500),
+    "Units_Sold": np.random.randint(10, 500, 500),
+})
 
-# ==========================================
-# HEADER
-# ==========================================
+data["Revenue"] = (
+    data["Units_Sold"] * 15
+    + data["Month"] * 120
+    + np.random.randint(100, 1000, 500)
+)
+
+# ---------------- MODEL ---------------- #
+X = data[["Year", "Month", "Day", "Units_Sold"]]
+y = data["Revenue"]
+
+model = RandomForestRegressor()
+model.fit(X, y)
+
+# ---------------- HEADER ---------------- #
 st.markdown(
-    '<div class="main-title">📈 AI Based Sales Forecasting</div>',
+    '<div class="main-title">📈 AI Based Sales Forecasting System</div>',
     unsafe_allow_html=True
 )
 
@@ -160,126 +169,46 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ==========================================
-# SAMPLE DATASET
-# ==========================================
-np.random.seed(42)
+# ---------------- LAYOUT ---------------- #
+col1, col2 = st.columns([2, 1])
 
-data = {
-    'Year': np.random.randint(2020, 2026, 500),
-    'Month': np.random.randint(1, 13, 500),
-    'Day': np.random.randint(1, 29, 500),
-    'Units_Sold': np.random.randint(10, 200, 500),
-}
-
-df = pd.DataFrame(data)
-
-df['Revenue'] = (
-    df['Units_Sold'] * np.random.randint(20, 50, 500)
-    + np.random.randint(100, 1000, 500)
-)
-
-# ==========================================
-# MODEL TRAINING
-# ==========================================
-X = df[['Year', 'Month', 'Day', 'Units_Sold']]
-y = df['Revenue']
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y,
-    test_size=0.2,
-    random_state=42
-)
-
-model = RandomForestRegressor(
-    n_estimators=100,
-    random_state=42
-)
-
-model.fit(X_train, y_train)
-
-# ==========================================
-# LAYOUT
-# ==========================================
-left, right = st.columns([2,1])
-
-# ==========================================
-# LEFT SIDE
-# ==========================================
-with left:
+# ---------------- LEFT SIDE ---------------- #
+with col1:
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.subheader("📝 Enter Sales Information")
 
-    year = st.number_input(
-        "Enter Year",
-        min_value=2020,
-        max_value=2035,
-        value=2026
-    )
+    year = st.number_input("Enter Year", 2020, 2035, 2026)
+    month = st.slider("Enter Month", 1, 12, 1)
+    day = st.slider("Enter Day", 1, 31, 1)
+    units = st.number_input("Enter Units Sold", 1, 10000, 50)
 
-    month = st.number_input(
-        "Enter Month",
-        min_value=1,
-        max_value=12,
-        value=1
-    )
-
-    day = st.number_input(
-        "Enter Day",
-        min_value=1,
-        max_value=31,
-        value=1
-    )
-
-    units = st.number_input(
-        "Enter Units Sold",
-        min_value=1,
-        max_value=10000,
-        value=50
-    )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    predict_button = st.button("🚀 Predict Revenue")
+    predict_btn = st.button("🚀 Predict Revenue")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # ======================================
-    # PREDICTION
-    # ======================================
-    if predict_button:
+    # ---------------- PREDICTION ---------------- #
+    if predict_btn:
 
-        input_data = pd.DataFrame({
-            'Year': [year],
-            'Month': [month],
-            'Day': [day],
-            'Units_Sold': [units]
-        })
+        with st.spinner("AI is predicting revenue..."):
+            time.sleep(2)
 
-        prediction = model.predict(input_data)
-
-        st.markdown("<br>", unsafe_allow_html=True)
+        prediction = model.predict([[year, month, day, units]])
 
         st.markdown(f"""
         <div class="result-card">
             <div class="result-text">
-                💰 Predicted Revenue
+                Predicted Revenue
             </div>
-
-            <br>
-
             <div class="result-value">
-                ₹ {round(prediction[0], 2)}
+                ₹ {prediction[0]:,.2f}
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-# ==========================================
-# RIGHT SIDE
-# ==========================================
-with right:
+# ---------------- RIGHT SIDE ---------------- #
+with col2:
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
@@ -288,29 +217,41 @@ with right:
     st.metric("Model Accuracy", "94%")
     st.metric("Dataset Size", "500 Rows")
     st.metric("Features", "4")
+    st.metric("Algorithm", "Random Forest")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+# ---------------- CHART SECTION ---------------- #
+st.markdown("<br>", unsafe_allow_html=True)
 
-    st.subheader("⚡ Features")
+st.markdown('<div class="card">', unsafe_allow_html=True)
 
-    st.write("✔ AI Based Prediction")
-    st.write("✔ Real-time Forecasting")
-    st.write("✔ Attractive Dashboard")
-    st.write("✔ Professional UI")
-    st.write("✔ Machine Learning Model")
+st.subheader("📊 Revenue Analytics")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+chart_data = data.groupby("Month")["Revenue"].mean().reset_index()
 
-# ==========================================
-# FOOTER
-# ==========================================
-st.markdown("<br><br>", unsafe_allow_html=True)
+fig = px.line(
+    chart_data,
+    x="Month",
+    y="Revenue",
+    markers=True,
+    title="Average Revenue by Month"
+)
 
+fig.update_layout(
+    plot_bgcolor="#1E293B",
+    paper_bgcolor="#1E293B",
+    font_color="white"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ---------------- FOOTER ---------------- #
 st.markdown("""
 <center>
-<p style='color:gray'>
+<p style='color:gray; margin-top:30px;'>
 Made with ❤️ using Streamlit & Machine Learning
 </p>
 </center>
