@@ -7,14 +7,12 @@ from sklearn.ensemble import RandomForestRegressor
 from reportlab.pdfgen import canvas
 from datetime import datetime
 
-# ---------------- PAGE CONFIG ----------------
+
 st.set_page_config(
     page_title="AI Sales Forecasting",
-    page_icon="📈",
     layout="wide"
 )
 
-# ---------------- CUSTOM CSS ----------------
 st.markdown(
     """
     <style>
@@ -44,8 +42,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# ---------------- DATABASE ----------------
 conn = sqlite3.connect("sales.db", check_same_thread=False)
 c = conn.cursor()
 
@@ -63,15 +59,14 @@ CREATE TABLE IF NOT EXISTS predictions (
 
 conn.commit()
 
-# ---------------- LOGIN SYSTEM ----------------
-USER = "admin"
+USER = "Dipali"
 PASS = "1234"
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    st.title("🔐 Login")
+    st.title(" Login")
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -86,8 +81,7 @@ if not st.session_state.logged_in:
 
     st.stop()
 
-# ---------------- SIDEBAR ----------------
-st.sidebar.title("📊 Dashboard")
+st.sidebar.title(" Dashboard")
 
 st.sidebar.info(
     """
@@ -103,11 +97,9 @@ st.sidebar.info(
     """
 )
 
-# ---------------- HEADER ----------------
-st.title("📈 AI Based Sales Forecasting")
+st.title(" AI Based Sales Forecasting")
 st.caption("Professional AI Dashboard for Revenue Prediction")
 
-# ---------------- SAMPLE DATA ----------------
 np.random.seed(42)
 
 dates = pd.date_range(start="2025-01-01", periods=100)
@@ -124,14 +116,13 @@ sample_df["Month"] = sample_df["Date"].dt.month
 sample_df["Day"] = sample_df["Date"].dt.day
 sample_df["Units"] = np.random.randint(10, 100, size=100)
 
-# ---------------- MODEL TRAINING ----------------
+
 X = sample_df[["Year", "Month", "Day", "Units"]]
 y = sample_df["Sales"]
 
 model = RandomForestRegressor()
 model.fit(X, y)
 
-# ---------------- METRICS ----------------
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -169,8 +160,7 @@ with col3:
 
 st.markdown("---")
 
-# ---------------- CSV UPLOAD ----------------
-st.subheader("📂 Upload CSV Dataset")
+st.subheader(" Upload CSV Dataset")
 
 uploaded_file = st.file_uploader("Upload CSV File", type=["csv"])
 
@@ -179,8 +169,7 @@ if uploaded_file:
     st.success("CSV Uploaded Successfully")
     st.dataframe(uploaded_df)
 
-# ---------------- INPUT SECTION ----------------
-st.subheader("📝 Enter Sales Information")
+st.subheader(" Enter Sales Information")
 
 col1, col2 = st.columns(2)
 
@@ -192,14 +181,12 @@ with col2:
     day = st.number_input("Enter Day", min_value=1, max_value=31, value=1)
     units = st.number_input("Enter Units Sold", value=50)
 
-# ---------------- PREDICTION ----------------
 if st.button("Predict Sales"):
 
     prediction = model.predict([[year, month, day, units]])[0]
 
     st.success(f"Predicted Sales Revenue: ₹ {prediction:.2f}")
-
-    # Save to database
+    
     c.execute(
         """
         INSERT INTO predictions
@@ -218,7 +205,6 @@ if st.button("Predict Sales"):
 
     conn.commit()
 
-    # ---------------- PDF REPORT ----------------
     pdf_file = "prediction_report.pdf"
 
     c_pdf = canvas.Canvas(pdf_file)
@@ -243,9 +229,9 @@ if st.button("Predict Sales"):
             mime="application/pdf"
         )
 
-# ---------------- LIVE CHARTS ----------------
+
 st.markdown("---")
-st.subheader("📊 Live Sales Charts")
+st.subheader(" Live Sales Charts")
 
 fig = px.line(
     sample_df,
@@ -256,8 +242,7 @@ fig = px.line(
 
 st.plotly_chart(fig, use_container_width=True)
 
-# ---------------- ANIMATED GRAPH ----------------
-st.subheader("🎥 Animated Sales Graph")
+st.subheader(" Animated Sales Graph")
 
 animated_df = sample_df.copy()
 animated_df["Frame"] = animated_df.index
@@ -273,9 +258,8 @@ fig2 = px.bar(
 
 st.plotly_chart(fig2, use_container_width=True)
 
-# ---------------- DATABASE VIEW ----------------
 st.markdown("---")
-st.subheader("🗄 Prediction History")
+st.subheader(" Prediction History")
 
 history_df = pd.read_sql_query(
     "SELECT * FROM predictions ORDER BY id DESC",
@@ -284,6 +268,5 @@ history_df = pd.read_sql_query(
 
 st.dataframe(history_df, use_container_width=True)
 
-# ---------------- FOOTER ----------------
 st.markdown("---")
 st.caption("Developed with Streamlit + AI + Machine Learning")
