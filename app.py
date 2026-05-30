@@ -85,7 +85,7 @@ st.sidebar.title(" Dashboard")
 
 st.sidebar.info(
     """
-    ### AI Sales Forecasting System
+     AI Sales Forecasting System
 
     Predict future sales revenue using AI.
 
@@ -96,6 +96,31 @@ st.sidebar.info(
     ✅ Animated Graphs
     """
 )
+st.markdown("## 🚀 Future AI Features")
+
+st.info("""
+✅ Real-Time Sales Prediction
+
+✅ Customer Purchase Prediction
+
+✅ Smart Inventory Management
+
+✅ Product Recommendation System
+
+✅ Seasonal Trend Analysis
+
+✅ AI Chatbot Assistant
+
+✅ Automatic PDF Reports
+
+✅ Live Data Analytics
+
+✅ Revenue Growth Prediction
+
+✅ Risk Detection System
+
+✅ Business Performance Insights
+""")
 
 st.title(" AI Based Sales Forecasting")
 st.caption("Professional AI Dashboard for Revenue Prediction")
