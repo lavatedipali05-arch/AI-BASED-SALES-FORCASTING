@@ -96,7 +96,7 @@ st.sidebar.info(
     ✅ Animated Graphs
     """
 )
-st.markdown("## 🚀 Future AI Features")
+st.markdown("## Future AI Features")
 
 st.info("""
 ✅ Real-Time Sales Prediction
